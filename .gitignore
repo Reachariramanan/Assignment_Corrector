@@ -1,0 +1,11 @@
+backend/.venv/
+backend/data/
+backend/.env
+backend/submission_review.db
+/.env
+imports/
+data/
+frontend/node_modules/
+frontend/dist/
+__pycache__/
+*.pyc

@@ -1,0 +1,44 @@
+services:
+  minio:
+    image: minio/minio
+    container_name: dsa-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+    ports:
+      - "19100:9000"
+      - "19101:9001"
+    volumes:
+      - dsa_paper_correction_minio_data:/data
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    container_name: dsa-backend
+    network_mode: host
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend/data:/app/data
+      - ./imports:/imports
+    depends_on:
+      - minio
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: dsa-frontend
+    network_mode: host
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/index.html:/app/index.html
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  dsa_paper_correction_minio_data:
+    external: true

@@ -1,0 +1,82 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.
+.zencoder/
+.zenflow/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Data and exports
+data/*.csv
+data/*.json
+exports/*.json
+*.db
+*.sqlite
+
+# Agent system directories
+memory_sessions/
+agent_chats/
+
+# Testing
+.pytest_cache/
+tests/
+.coverage
+htmlcov/
+.tox/
+chats/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment variables
+.env
+.env.local
+
+# Temporary files
+MagicMock/
+temp/
+tmp/
+*.tmp
+*.bak
+
+# OS
+Thumbs.db
+.DS_Store
+yukta_rust_sdk/
+yukta_rust_py_sdk/
+
+.venv-test/

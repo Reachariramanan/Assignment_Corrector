@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic Student Workspace</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #f5f5f2;
+    --panel: #ffffff;
+    --soft: #f1f1ef;
+    --soft-2: #e9e9e6;
+    --border: #deded9;
+    --text: #181817;
+    --muted: #777771;
+    --faint: #a4a49e;
+    --accent: #1b1c1a;
+    --green: #3f805b;
+    --accent-soft: rgba(27,28,26,.07);
+    --shadow: 0 12px 35px rgba(20,20,18,.055);
+    --shadow-lg: 0 22px 65px rgba(20,20,18,.12);
+}
+
+body.dark {
+    --bg: #111211;
+    --panel: #181918;
+    --soft: #202120;
+    --soft-2: #272827;
+    --border: #30312f;
+    --text: #eeeeeb;
+    --muted: #999a94;
+    --faint: #666862;
+    --accent: #eeeeeb;
+    --green: #72b68b;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+/* ---------------- TOP BAR ---------------- */
+
+.topbar {
+    height: 58px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    gap: 18px;
+    background: var(--panel);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-weight: 700;
+    letter-spacing: -.3px;
+}
+
+.logo-mark {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: var(--accent);
+    position: relative;
+}
+
+.logo-mark::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    background: var(--panel);
+    border-radius: 50%;
+    position: absolute;
+    top: 9px;
+    left: 9px;
+}
+
+.top-search {
+    margin-left: auto;
+    width: 230px;
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    padding: 0 11px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.agent-status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+}
+
+/* ---------------- MAIN LAYOUT ---------------- */
+
+.app {
+    height: calc(100vh - 58px);
+    display: flex;
+    overflow: hidden;
+}
+
+/* LEFT */
+
+.sidebar {
+    width: 235px;
+    flex: 0 0 235px;
+    border-right: 1px solid var(--border);
+    background: var(--panel);
+    transition: width .25s ease;
+    overflow: hidden;
+}
+
+.sidebar.collapsed {
+    width: 58px;
+}
+
+.sidebar-inner {
+    width: 235px;
+    height: 100%;
+    padding: 16px 12px;
+}
+
+.sidebar.collapsed .sidebar-inner {
+    width: 58px;
+}
+
+.new-chat {
+    height: 38px;
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 0 11px;
+    font-size: 13px;
+}
+
+.sidebar.collapsed .new-chat span {
+    display: none;
+}
+
+.section-title {
+    margin: 25px 9px 9px;
+    font-size: 10px;
+    color: var(--faint);
+    letter-spacing: .08em;
+    font-weight: 700;
+}
+
+.conversation {
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 9px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.conversation:hover,
+.conversation.active {
+    background: var(--soft);
+    color: var(--text);
+}
+
+.conversation-icon {
+    width: 18px;
+    text-align: center;
+}
+
+.sidebar.collapsed .section-title,
+.sidebar.collapsed .conversation span:not(.conversation-icon) {
+    display: none;
+}
+
+.collapse-sidebar {
+    position: absolute;
+    left: 216px;
+    bottom: 18px;
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    border-radius: 8px;
+    transition: left .25s ease;
+    z-index: 10;
+}
+
+.sidebar.collapsed + .workspace .collapse-sidebar {
+    left: 39px;
+}
+
+/* CENTER */
+
+.workspace {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    padding-bottom: 34px;
+}
+
+.chat-panel {
+    flex: 0 1 40%;
+    width: 40%;
+    min-width: 320px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    overflow: hidden;
+}
+
+.chat-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 35px clamp(25px, 5vw, 75px);
+}
+
+.message {
+    max-width: 780px;
+    margin: 0 auto 30px;
+}
+
+.user-message {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.user-bubble {
+    max-width: 70%;
+    background: var(--soft-2);
+    border-radius: 15px;
+    padding: 12px 15px;
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.agent-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 9px;
+}
+
+.agent-response {
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.agent-response strong {
+    font-weight: 650;
+}
+
+/* TRACE */
+
+.trace {
+    margin-top: 17px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--panel);
+}
+
+.trace-header {
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    font-size: 11px;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+.trace-header:hover {
+    background: var(--soft);
+}
+
+.trace-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.trace-chevron {
+    transition: transform .2s;
+}
+
+.trace.open .trace-chevron {
+    transform: rotate(180deg);
+}
+
+.trace-body {
+    display: none;
+    padding: 2px 14px 13px 32px;
+}
+
+.trace.open .trace-body {
+    display: block;
+}
+
+.think-text {
+    color: var(--faint);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+.bash-text {
+    color: var(--muted);
+    font: 12px/1.6 "SFMono-Regular", Consolas, monospace;
+}
+
+.result-line {
+    color: var(--green);
+    font: 11px/1.6 "SFMono-Regular", Consolas, monospace;
+}
+
+/* COMPOSER */
+
+.composer-area {
+    padding: 12px clamp(20px, 5vw, 75px) 18px;
+}
+
+.composer {
+    max-width: 780px;
+    margin: auto;
+    min-height: 55px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    padding: 7px 9px;
+    gap: 7px;
+}
+
+.composer input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--text);
+    padding: 0 7px;
+}
+
+.composer button {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+}
+
+.composer button:hover {
+    background: var(--soft);
+}
+
+.send {
+    background: var(--accent) !important;
+    color: var(--panel);
+}
+
+/* RESIZE */
+
+.resizer {
+    flex: 0 0 5px;
+    width: 5px;
+    height: 100%;
+    cursor: col-resize;
+    position: relative;
+    z-index: 12;
+    background: transparent;
+}
+
+.resizer::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 1px;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 55px;
+    border-radius: 5px;
+    background: var(--border);
+    transition: height .2s, background .2s;
+}
+
+.resizer:hover::after,
+body.resizing .resizer::after {
+    height: 90px;
+    background: var(--muted);
+}
+
+/* RIGHT */
+
+.insights {
+    flex: 1 1 20%;
+    width: auto;
+    min-width: 250px;
+    max-width: 60%;
+    height: 100%;
+    min-height: 0;
+    border-left: 1px solid var(--border);
+    background: var(--panel);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.insights-inner {
+    padding: 22px;
+}
+
+.insights-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.eyebrow {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: .1em;
+    font-weight: 700;
+}
+
+.insights-title {
+    margin-top: 4px;
+    font-size: 19px;
+    font-weight: 650;
+    letter-spacing: -.5px;
+}
+
+.period {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.metric {
+    padding: 13px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.metric-value {
+    font-size: 22px;
+    font-weight: 650;
+}
+
+.metric-label {
+    color: var(--muted);
+    font-size: 10px;
+    margin-top: 3px;
+}
+
+/* CHART */
+
+.chart-card {
+    margin-top: 9px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.chart-title {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 10px;
+}
+
+.chart {
+    width: 100%;
+    height: 95px;
+}
+
+.chart path {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2;
+}
+
+.chart-grid {
+    stroke: var(--border);
+    stroke-width: 1;
+}
+
+.chart-labels {
+    display: flex;
+    justify-content: space-between;
+    color: var(--faint);
+    font-size: 9px;
+}
+
+/* STUDENTS */
+
+.students {
+    margin-top: 22px;
+}
+
+.student-search {
+    width: 100%;
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 10px;
+    background: transparent;
+    outline: none;
+    color: var(--text);
+    font-size: 12px;
+    margin: 9px 0;
+}
+
+.student {
+    display: flex;
+    align-items: center;
+    padding: 10px 8px;
+    border-radius: 9px;
+    cursor: pointer;
+}
+
+.student:hover {
+    background: var(--soft);
+}
+
+.avatar {
+    width: 29px;
+    height: 29px;
+    border-radius: 50%;
+    background: var(--soft-2);
+    display: grid;
+    place-items: center;
+    font-size: 10px;
+    margin-right: 9px;
+}
+
+.student-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.student-name {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.student-domain {
+    color: var(--muted);
+    font-size: 9px;
+    margin-top: 2px;
+}
+
+.student-score {
+    font-size: 12px;
+    font-weight: 650;
+}
+
+/* PROFILE */
+
+.profile {
+    display: none;
+}
+
+.profile.show {
+    display: block;
+}
+
+.profile-back {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 20px;
+}
+
+.profile-name {
+    font-size: 24px;
+    font-weight: 650;
+}
+
+.profile-role {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+.profile-score {
+    margin-top: 25px;
+    font-size: 42px;
+    font-weight: 700;
+}
+
+.progress {
+    height: 6px;
+    border-radius: 10px;
+    background: var(--soft-2);
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--accent);
+}
+
+.profile-section {
+    margin-top: 28px;
+}
+
+.profile-section-title {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: .08em;
+    font-weight: 700;
+    margin-bottom: 9px;
+}
+
+.tag {
+    display: inline-block;
+    padding: 5px 8px;
+    background: var(--soft);
+    border-radius: 6px;
+    font-size: 10px;
+    margin-right: 4px;
+}
+
+/* HARNESS */
+
+.harness {
+    position: absolute;
+    bottom: 75px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(390px, 80%);
+    border: 1px solid var(--border);
+    background: var(--panel);
+    border-radius: 12px;
+    box-shadow: 0 15px 45px rgba(0,0,0,.1);
+    z-index: 20;
+    display: none;
+}
+
+.harness.show {
+    display: block;
+}
+
+.harness-header {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.harness-body {
+    padding: 13px;
+}
+
+.harness-group {
+    margin-bottom: 15px;
+}
+
+.harness-group-title {
+    font-size: 9px;
+    color: var(--faint);
+    letter-spacing: .1em;
+    margin-bottom: 8px;
+}
+
+.harness-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.connected {
+    color: var(--green);
+}
+
+/* BOTTOM STATUS */
+
+.bottom-status {
+    height: 34px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-top: 1px solid var(--border);
+    background: var(--panel);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--muted);
+    gap: 12px;
+}
+
+.harness-button {
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 950px) {
+    .sidebar {
+        width: 58px;
+    }
+
+    .sidebar-inner {
+        width: 58px;
+    }
+
+    .sidebar .section-title,
+    .sidebar .conversation span:not(.conversation-icon),
+    .sidebar .new-chat span {
+        display: none;
+    }
+
+    .collapse-sidebar {
+        display: none;
+    }
+
+    .insights {
+        min-width: 220px;
+    }
+}
+
+@media (max-width: 720px) {
+    .insights {
+        display: none;
+    }
+
+    .chat-panel {
+        width: 100% !important;
+        flex: 1 1 100% !important;
+        min-width: 0;
+    }
+
+    .resizer {
+        display: none;
+    }
+
+    .chat-scroll {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .top-search {
+        display: none;
+    }
+}
+
+/* ---------------- POLISHED VISUAL LAYER ---------------- */
+
+html { scroll-behavior: smooth; }
+
+body {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+.topbar {
+    position: relative;
+    z-index: 50;
+    box-shadow: 0 1px 0 rgba(0,0,0,.015);
+}
+
+.logo-mark {
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+.top-search {
+    background: var(--soft);
+    transition: border-color .18s, background .18s, box-shadow .18s;
+}
+
+.top-search:hover {
+    background: var(--panel);
+    border-color: var(--faint);
+}
+
+.topbar > button {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    transition: background .18s, transform .18s;
+}
+
+.topbar > button:hover {
+    background: var(--soft);
+    transform: rotate(12deg);
+}
+
+.sidebar {
+    box-shadow: 4px 0 24px rgba(0,0,0,.018);
+}
+
+.new-chat {
+    background: var(--panel);
+    transition: background .18s, border-color .18s, transform .18s;
+}
+
+.new-chat:hover {
+    background: var(--soft);
+    border-color: var(--faint);
+    transform: translateY(-1px);
+}
+
+.conversation {
+    transition: background .16s, color .16s, transform .16s;
+}
+
+.conversation:hover {
+    transform: translateX(2px);
+}
+
+.conversation.active {
+    font-weight: 600;
+    box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.collapse-sidebar {
+    box-shadow: 0 5px 18px rgba(0,0,0,.06);
+}
+
+.chat-panel {
+    background:
+        radial-gradient(circle at 50% -10%, rgba(255,255,255,.8), transparent 36%),
+        var(--bg);
+}
+
+.chat-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+
+.message {
+    animation: messageIn .28s ease both;
+}
+
+@keyframes messageIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.user-bubble {
+    box-shadow: 0 2px 8px rgba(0,0,0,.025);
+}
+
+.agent-response {
+    letter-spacing: -.005em;
+}
+
+.trace {
+    box-shadow: 0 2px 12px rgba(0,0,0,.025);
+    transition: border-color .18s, box-shadow .18s;
+}
+
+.trace:hover {
+    border-color: var(--faint);
+}
+
+.trace.open {
+    box-shadow: 0 5px 18px rgba(0,0,0,.035);
+}
+
+.trace-header {
+    user-select: none;
+}
+
+.trace-left span:nth-child(2) {
+    letter-spacing: .09em;
+    font-weight: 650;
+}
+
+.think-text {
+    padding-left: 2px;
+    border-left: 1px solid var(--soft-2);
+}
+
+.composer {
+    transition: border-color .18s, box-shadow .18s, transform .18s;
+}
+
+.composer:focus-within {
+    border-color: var(--faint);
+    box-shadow: 0 12px 35px rgba(0,0,0,.075);
+    transform: translateY(-1px);
+}
+
+.composer input::placeholder {
+    color: var(--faint);
+}
+
+.composer button {
+    transition: background .16s, transform .16s;
+}
+
+.composer button:hover {
+    transform: translateY(-1px);
+}
+
+.send:hover {
+    filter: brightness(.9);
+}
+
+.resizer {
+    z-index: 8;
+}
+
+.resizer::after {
+    box-shadow: 0 0 0 3px transparent;
+}
+
+.insights {
+    box-shadow: -5px 0 24px rgba(0,0,0,.018);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+
+.metric,
+.chart-card {
+    background: color-mix(in srgb, var(--panel) 92%, var(--soft));
+    transition: transform .18s, border-color .18s, box-shadow .18s;
+}
+
+.metric:hover,
+.chart-card:hover {
+    transform: translateY(-1px);
+    border-color: var(--faint);
+    box-shadow: 0 7px 20px rgba(0,0,0,.035);
+}
+
+.metric-value {
+    letter-spacing: -.04em;
+}
+
+.chart-card {
+    overflow: hidden;
+}
+
+.student-search {
+    background: var(--soft);
+    transition: background .18s, border-color .18s, box-shadow .18s;
+}
+
+.student-search:focus {
+    background: var(--panel);
+    border-color: var(--faint);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.student {
+    border: 1px solid transparent;
+    transition: background .16s, border-color .16s, transform .16s;
+}
+
+.student:hover {
+    border-color: var(--border);
+    transform: translateX(2px);
+}
+
+.student-score {
+    min-width: 24px;
+    text-align: right;
+}
+
+.avatar {
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.045);
+}
+
+.profile-back {
+    padding: 6px 8px;
+    border-radius: 7px;
+    transition: background .16s;
+}
+
+.profile-back:hover {
+    background: var(--soft);
+}
+
+.profile-score {
+    letter-spacing: -.055em;
+}
+
+.progress {
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.025);
+}
+
+.progress-fill {
+    border-radius: inherit;
+    transition: width .55s cubic-bezier(.2,.75,.25,1);
+}
+
+.tag {
+    border: 1px solid var(--border);
+}
+
+.harness {
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(12px);
+}
+
+.harness-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.harness-header::after {
+    content: "ESC";
+    font: 9px/1 "SFMono-Regular", Consolas, monospace;
+    color: var(--faint);
+    border: 1px solid var(--border);
+    padding: 3px 5px;
+    border-radius: 5px;
+}
+
+.harness-item {
+    border-radius: 6px;
+    padding-left: 7px;
+    padding-right: 7px;
+}
+
+.harness-item:hover {
+    background: var(--soft);
+}
+
+.bottom-status {
+    backdrop-filter: blur(10px);
+}
+
+.bottom-status::before {
+    content: "";
+    position: absolute;
+    left: 18px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--green) 12%, transparent);
+}
+
+@media (max-width: 1100px) {
+    .top-search { width: 190px; }
+    .insights-inner { padding: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="logo">
+        <div class="logo-mark"></div>
+        <span>Research Agent</span>
+    </div>
+
+    <div class="top-search">
+        ⌕ &nbsp; Search workspace
+    </div>
+
+    <div class="agent-status">
+        <span class="status-dot"></span>
+        Agent online
+    </div>
+
+    <button onclick="toggleDark()" title="Toggle theme">◐</button>
+</header>
+
+
+<main class="app">
+
+    <!-- LEFT CONVERSATION SHEATH -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-inner">
+
+            <button class="new-chat">
+                ＋
+                <span>New conversation</span>
+            </button>
+
+            <div class="section-title">TODAY</div>
+
+            <div class="conversation active">
+                <span class="conversation-icon">◉</span>
+                <span>PMRF performance</span>
+            </div>
+
+            <div class="conversation">
+                <span class="conversation-icon">◉</span>
+                <span>ICET mapping</span>
+            </div>
+
+            <div class="conversation">
+                <span class="conversation-icon">◉</span>
+                <span>Research trends</span>
+            </div>
+
+            <div class="section-title">YESTERDAY</div>
+
+            <div class="conversation">
+                <span class="conversation-icon">◉</span>
+                <span>Student analysis</span>
+            </div>
+
+            <div class="conversation">
+                <span class="conversation-icon">◉</span>
+                <span>SDG mapping</span>
+            </div>
+
+            <div class="section-title">RECENT</div>
+
+            <div class="conversation">
+                <span class="conversation-icon">◉</span>
+                <span>Research outputs</span>
+            </div>
+
+        </div>
+    </aside>
+
+
+    <!-- MAIN WORKSPACE -->
+
+    <section class="workspace" id="workspace">
+
+        <button class="collapse-sidebar" onclick="toggleSidebar()">‹</button>
+
+        <div class="chat-panel">
+
+            <div class="chat-scroll">
+
+                <div class="message user-message">
+
+                    <div class="user-bubble">
+                        Analyse the performance of PMRF students working on healthcare AI and identify students whose performance is declining.
+                    </div>
+
+                </div>
+
+
+                <div class="message">
+
+                    <div class="agent-label">
+                        Student Research Agent
+                    </div>
+
+                    <div class="agent-response">
+
+                        I analysed the student research records and identified
+                        <strong>12 students</strong> working in healthcare AI whose
+                        recent performance trend is declining.
+
+                        <br><br>
+
+                        The largest decline appears in research-output completion
+                        and recent evaluation scores.
+
+                    </div>
+
+
+                    <!-- THINK -->
+
+                    <div class="trace open">
+
+                        <div class="trace-header" onclick="toggleTrace(this.parentElement)">
+
+                            <div class="trace-left">
+                                <span>◌</span>
+                                <span>THINK</span>
+                                <span style="opacity:.55">2.4s</span>
+                            </div>
+
+                            <span class="trace-chevron">⌄</span>
+
+                        </div>
+
+                        <div class="trace-body">
+
+                            <div class="think-text">
+                                Identifying healthcare AI research domains...<br>
+                                Comparing recent performance metrics...<br>
+                                Checking longitudinal score changes...<br>
+                                Filtering students with declining trends...
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BASH -->
+
+                    <div class="trace">
+
+                        <div class="trace-header" onclick="toggleTrace(this.parentElement)">
+
+                            <div class="trace-left">
+                                <span>$</span>
+                                <span>BASH</span>
+                                <span style="opacity:.55">0.8s</span>
+                            </div>
+
+                            <span class="trace-chevron">⌄</span>
+
+                        </div>
+
+                        <div class="trace-body">
+
+                            <div class="bash-text">
+                                python analyse_students.py
+                            </div>
+
+                            <div class="result-line">
+                                ✓ 576 rows processed<br>
+                                ✓ 42 healthcare AI students<br>
+                                ✓ 12 declining trends
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="message">
+
+                    <div class="agent-response">
+
+                        <strong>Key observation</strong><br><br>
+
+                        Students with declining scores are concentrated around
+                        research-output completion and literature-review milestones.
+
+                        <br><br>
+
+                        I've highlighted the affected students in the
+                        <strong>Student Insights</strong> panel.
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- COMPOSER -->
+
+            <div class="composer-area">
+
+                <div class="composer">
+
+                    <button>＋</button>
+
+                    <input
+                        id="prompt"
+                         aria-label="Ask the research agent"
+                         placeholder="Ask the research agent..."
+                        onkeydown="handleEnter(event)"
+                    >
+
+                    <button title="Skills">✦</button>
+
+                    <button class="send" onclick="sendMessage()">↑</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- DRAG HANDLE -->
+
+        <div class="resizer" id="resizer"></div>
+
+
+        <!-- RIGHT ANALYTICS -->
+
+        <aside class="insights">
+
+            <div class="insights-inner">
+
+                <div id="studentListPanel">
+
+                    <div class="insights-header">
+
+                        <div>
+                            <div class="eyebrow">STUDENT INTELLIGENCE</div>
+                            <div class="insights-title">Performance</div>
+                        </div>
+
+                        <div class="period">2026</div>
+
+                    </div>
+
+
+                    <div class="metrics">
+
+                        <div class="metric">
+                            <div class="metric-value">576</div>
+                            <div class="metric-label">Students</div>
+                        </div>
+
+                        <div class="metric">
+                            <div class="metric-value">82%</div>
+                            <div class="metric-label">Average score</div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="chart-card">
+
+                        <div class="chart-title">
+                            PERFORMANCE TREND
+                        </div>
+
+                        <svg class="chart" viewBox="0 0 300 95" preserveAspectRatio="none">
+
+                            <line class="chart-grid" x1="0" y1="25" x2="300" y2="25"></line>
+                            <line class="chart-grid" x1="0" y1="50" x2="300" y2="50"></line>
+                            <line class="chart-grid" x1="0" y1="75" x2="300" y2="75"></line>
+
+                            <path d="M0 72 C30 69 45 60 70 64 S110 50 135 55 S170 38 195 43 S230 30 250 35 S280 22 300 25"></path>
+
+                        </svg>
+
+                        <div class="chart-labels">
+                            <span>Jan</span>
+                            <span>Feb</span>
+                            <span>Mar</span>
+                            <span>Apr</span>
+                            <span>May</span>
+                            <span>Jun</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="students">
+
+                        <div class="eyebrow">STUDENTS</div>
+
+                        <input
+                            class="student-search"
+                            placeholder="Search students..."
+                            oninput="filterStudents(this.value)"
+                        >
+
+
+                        <div id="students">
+
+                            <div class="student"
+                                 data-name="Arun Kumar"
+                                 onclick="openStudent('Arun Kumar','AI / Computer Science',91,'AI & Machine Learning','SDG 4 · SDG 9')">
+
+                                <div class="avatar">AK</div>
+
+                                <div class="student-info">
+                                    <div class="student-name">Arun Kumar</div>
+                                    <div class="student-domain">AI / Computer Science</div>
+                                </div>
+
+                                <div class="student-score">91</div>
+
+                            </div>
+
+
+                            <div class="student"
+                                 data-name="Priya S"
+                                 onclick="openStudent('Priya S','Biomedical AI',88,'Biomedical AI','SDG 3 · SDG 9')">
+
+                                <div class="avatar">PS</div>
+
+                                <div class="student-info">
+                                    <div class="student-name">Priya S</div>
+                                    <div class="student-domain">Biomedical AI</div>
+                                </div>
+
+                                <div class="student-score">88</div>
+
+                            </div>
+
+
+                            <div class="student"
+                                 data-name="Karthik R"
+                                 onclick="openStudent('Karthik R','Remote Sensing',84,'Remote Sensing','SDG 9 · SDG 13')">
+
+                                <div class="avatar">KR</div>
+
+                                <div class="student-info">
+                                    <div class="student-name">Karthik R</div>
+                                    <div class="student-domain">Remote Sensing</div>
+                                </div>
+
+                                <div class="student-score">84</div>
+
+                            </div>
+
+
+                            <div class="student"
+                                 data-name="Divya M"
+                                 onclick="openStudent('Divya M','NLP',79,'Natural Language Processing','SDG 4 · SDG 9')">
+
+                                <div class="avatar">DM</div>
+
+                                <div class="student-info">
+                                    <div class="student-name">Divya M</div>
+                                    <div class="student-domain">NLP</div>
+                                </div>
+
+                                <div class="student-score">79</div>
+
+                            </div>
+
+
+                            <div class="student"
+                                 data-name="Rahul K"
+                                 onclick="openStudent('Rahul K','Healthcare AI',74,'Healthcare AI','SDG 3')">
+
+                                <div class="avatar">RK</div>
+
+                                <div class="student-info">
+                                    <div class="student-name">Rahul K</div>
+                                    <div class="student-domain">Healthcare AI</div>
+                                </div>
+
+                                <div class="student-score">74</div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PROFILE -->
+
+                <div class="profile" id="profile">
+
+                    <button class="profile-back" onclick="closeStudent()">
+                        ← Back to students
+                    </button>
+
+                    <div class="profile-name" id="profileName"></div>
+
+                    <div class="profile-role" id="profileRole"></div>
+
+                    <div class="profile-score" id="profileScore"></div>
+
+                    <div class="progress">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+
+
+                    <div class="profile-section">
+
+                        <div class="profile-section-title">
+                            RESEARCH AREA
+                        </div>
+
+                        <span class="tag" id="profileArea"></span>
+
+                    </div>
+
+
+                    <div class="profile-section">
+
+                        <div class="profile-section-title">
+                            SDG ALIGNMENT
+                        </div>
+
+                        <span class="tag" id="profileSdg"></span>
+
+                    </div>
+
+
+                    <div class="profile-section">
+
+                        <div class="profile-section-title">
+                            RECENT ACTIVITY
+                        </div>
+
+                        <div style="font-size:11px;line-height:2;color:var(--muted)">
+                            ✓ Research output submitted<br>
+                            ✓ ICET mapping completed<br>
+                            ⚠ Literature review pending<br>
+                            ↓ Recent evaluation declining
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- AGENT HARNESS -->
+
+        <div class="harness" id="harness">
+
+            <div class="harness-header">
+                ✦ Agent Harness
+            </div>
+
+            <div class="harness-body">
+
+                <div class="harness-group">
+
+                    <div class="harness-group-title">
+                        ACTIVE SKILLS
+                    </div>
+
+                    <div class="harness-item">
+                        <span>ICET classification</span>
+                        <span class="connected">✓</span>
+                    </div>
+
+                    <div class="harness-item">
+                        <span>SDG mapping</span>
+                        <span class="connected">✓</span>
+                    </div>
+
+                    <div class="harness-item">
+                        <span>Student analytics</span>
+                        <span class="connected">✓</span>
+                    </div>
+
+                    <div class="harness-item">
+                        <span>Research summarization</span>
+                        <span class="connected">✓</span>
+                    </div>
+
+                </div>
+
+
+                <div class="harness-group">
+
+                    <div class="harness-group-title">
+                        TOOLS
+                    </div>
+
+                    <div class="harness-item">
+                        <span>PostgreSQL</span>
+                        <span class="connected">Connected</span>
+                    </div>
+
+                    <div class="harness-item">
+                        <span>Vector Search</span>
+                        <span class="connected">Connected</span>
+                    </div>
+
+                    <div class="harness-item">
+                        <span>Python</span>
+                        <span class="connected">Ready</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- BOTTOM STATUS -->
+
+        <div class="bottom-status">
+
+            <span>✦ Student Research Agent</span>
+
+            <span>•</span>
+
+            <span>6 skills</span>
+
+            <span>•</span>
+
+            <span>3 tools</span>
+
+            <span>•</span>
+
+            <button class="harness-button" onclick="toggleHarness()">
+                Agent harness ↗
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+/* ---------------- SIDEBAR ---------------- */
+
+function toggleSidebar() {
+
+    const sidebar = document.getElementById("sidebar");
+    const button = document.querySelector(".collapse-sidebar");
+
+    sidebar.classList.toggle("collapsed");
+
+    button.textContent =
+        sidebar.classList.contains("collapsed") ? "›" : "‹";
+}
+
+
+/* ---------------- DARK MODE ---------------- */
+
+function toggleDark() {
+    document.body.classList.toggle("dark");
+}
+
+
+/* ---------------- TRACE ---------------- */
+
+function toggleTrace(trace) {
+    trace.classList.toggle("open");
+}
+
+
+/* ---------------- HARNESS ---------------- */
+
+function toggleHarness() {
+
+    document
+        .getElementById("harness")
+        .classList.toggle("show");
+}
+
+
+/* ---------------- STUDENT PROFILE ---------------- */
+
+function openStudent(name, role, score, area, sdg) {
+
+    document
+        .getElementById("studentListPanel")
+        .style.display = "none";
+
+    const profile = document.getElementById("profile");
+
+    profile.classList.add("show");
+
+    document.getElementById("profileName").textContent = name;
+    document.getElementById("profileRole").textContent = role;
+    document.getElementById("profileScore").textContent = score + "%";
+    document.getElementById("profileFill").style.width = score + "%";
+    document.getElementById("profileArea").textContent = area;
+    document.getElementById("profileSdg").textContent = sdg;
+}
+
+
+function closeStudent() {
+
+    document
+        .getElementById("studentListPanel")
+        .style.display = "block";
+
+    document
+        .getElementById("profile")
+        .classList.remove("show");
+}
+
+
+/* ---------------- STUDENT SEARCH ---------------- */
+
+function filterStudents(query) {
+
+    query = query.toLowerCase();
+
+    document.querySelectorAll(".student").forEach(student => {
+
+        const name = student.dataset.name.toLowerCase();
+
+        student.style.display =
+            name.includes(query) ? "flex" : "none";
+    });
+}
+
+
+/* ---------------- COMPOSER ---------------- */
+
+function handleEnter(event) {
+
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+}
+
+
+function sendMessage() {
+
+    const input = document.getElementById("prompt");
+
+    if (!input.value.trim()) return;
+
+    const chat = document.querySelector(".chat-scroll");
+
+    const message = document.createElement("div");
+
+    message.className = "message user-message";
+
+    message.innerHTML = `
+        <div class="user-bubble">
+            ${escapeHtml(input.value)}
+        </div>
+    `;
+
+    chat.appendChild(message);
+
+    input.value = "";
+
+    chat.scrollTop = chat.scrollHeight;
+
+    setTimeout(() => {
+
+        const response = document.createElement("div");
+
+        response.className = "message";
+
+        response.innerHTML = `
+            <div class="agent-label">
+                Student Research Agent
+            </div>
+
+            <div class="agent-response">
+                I've started analysing the student research dataset
+                against the requested criteria.
+            </div>
+
+            <div class="trace open">
+
+                <div class="trace-header"
+                     onclick="toggleTrace(this.parentElement)">
+
+                    <div class="trace-left">
+                        <span>◌</span>
+                        <span>THINK</span>
+                        <span style="opacity:.55">1.8s</span>
+                    </div>
+
+                    <span class="trace-chevron">⌄</span>
+
+                </div>
+
+                <div class="trace-body">
+
+                    <div class="think-text">
+                        Interpreting the request...<br>
+                        Selecting relevant student records...<br>
+                        Comparing performance indicators...
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+        chat.appendChild(response);
+
+        chat.scrollTop = chat.scrollHeight;
+
+    }, 500);
+}
+
+
+/* ---------------- HTML ESCAPE ---------------- */
+
+function escapeHtml(text) {
+
+    const div = document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+}
+
+
+/* ---------------- RESIZABLE CENTER ---------------- */
+
+const workspace = document.getElementById("workspace");
+const resizer = document.getElementById("resizer");
+const chatPanel = document.querySelector(".chat-panel");
+
+let dragging = false;
+
+resizer.addEventListener("mousedown", () => {
+    dragging = true;
+    document.body.classList.add("resizing");
+    document.body.style.userSelect = "none";
+});
+
+document.addEventListener("mousemove", event => {
+    if (!dragging) return;
+
+    const rect = workspace.getBoundingClientRect();
+    const available = rect.width;
+    const x = event.clientX - rect.left;
+
+    const min = Math.max(320, available * 0.20);
+    const max = Math.min(available - 255, available * 0.60);
+    const width = Math.max(min, Math.min(max, x));
+
+    chatPanel.style.flex = "0 0 " + width + "px";
+    chatPanel.style.width = width + "px";
+});
+
+document.addEventListener("mouseup", () => {
+    dragging = false;
+    document.body.classList.remove("resizing");
+    document.body.style.userSelect = "";
+});
+
+
+/* ---------------- SMALL UX ENHANCEMENTS ---------------- */
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        document.getElementById("harness").classList.remove("show");
+    }
+
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        document.getElementById("prompt").focus();
+    }
+});
+
+document.querySelector(".new-chat")?.addEventListener("click", () => {
+    const chat = document.querySelector(".chat-scroll");
+    const prompt = document.getElementById("prompt");
+    chat.scrollTo({ top: 0, behavior: "smooth" });
+    prompt.focus();
+});
+
+/* Keep the resizable workspace usable when the browser changes size. */
+window.addEventListener("resize", () => {
+    const panel = document.querySelector(".chat-panel");
+    const rect = workspace.getBoundingClientRect();
+
+    if (panel.style.width && rect.width > 0) {
+        const current = parseFloat(panel.style.width);
+        const max = rect.width * 0.60;
+        if (current > max) panel.style.width = max + "px";
+    }
+});
+
+</script>
+
+</body>
+</html>
